@@ -27,4 +27,4 @@ class PatientDetails(models.Model):
     address = models.CharField(max_length=255)
     dob = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=False, blank=False, unique=False)
-    doctor = models.ManyToManyField(DoctorDetails, on_delete=models.PROTECT, blank=True)
+    doctor = models.ManyToManyField(DoctorDetails, blank=True)
