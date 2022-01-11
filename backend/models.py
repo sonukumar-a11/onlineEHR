@@ -28,3 +28,13 @@ class PatientDetails(models.Model):
     dob = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=False, blank=False, unique=False)
     doctor = models.ManyToManyField(DoctorDetails, blank=True)
+
+
+class VitalDetails(models.Model):
+    patient_id = models.ForeignKey(PatientDetails, on_delete=models.CASCADE)
+    weight = models.FloatField()
+    height = models.IntegerField()
+    bloodpressure = models.FloatField()
+    pulse = models.FloatField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    temperature = models.FloatField()
