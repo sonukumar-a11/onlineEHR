@@ -30,6 +30,32 @@ class PatientDetails(models.Model):
     doctor = models.ManyToManyField(DoctorDetails, blank=True)
 
 
+
+class Allergy(models.Model):
+    VERIFICATION_STATUS_CHOICE = [
+        ("1", "Suspected"),
+        ("2", "Likely"),
+        ("3", "Confirmed"),
+        ("4", "Resolved"),
+        ("5", "Refuted")
+    ]
+    CRITICALITY_CHOICE = [
+        ("1", "LOW"),
+        ("2", "MEDIUM"),
+        ("3", "HIGH")
+    ]
+    TYPE_CHOICE = [
+        ("1", "Allergy"),
+        ("2", "Intolerance")
+    ]
+    Patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="patient_allergy")
+    substance = models.CharField(max_length=30, null=True, blank=True)
+    verification_status = models.CharField(max_length=40, choices=VERIFICATION_STATUS_CHOICE)
+    criticality = models.CharField(max_length=40, choices=CRITICALITY_CHOICE)
+    type = models.CharField(max_length=40, choices=TYPE_CHOICE)
+    comment = models.CharField(max_length=255, null=True, blank=True)
+
+
 class VitalDetails(models.Model):
     patient_id = models.ForeignKey(PatientDetails, on_delete=models.CASCADE)
     weight = models.FloatField()
