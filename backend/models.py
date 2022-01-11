@@ -5,8 +5,11 @@ import uuid
 
 # Create your models here.
 class DoctorDetails(models.Model):
-    doctor_id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     doctor_name = models.TextField()
     doctor_email = models.TextField()
     doctor_password = models.CharField(max_length=10, validators=[MinLengthValidator(5)])
+
+    def __str__(self):
+        return self.id
 
