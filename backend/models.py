@@ -1,12 +1,11 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
-
-from uuid import uuid4
+import uuid
 
 
 # Create your models here.
 class DoctorDetails(models.Model):
-    doctor_id = models.IntegerField()
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     doctor_name = models.TextField()
     doctor_email = models.TextField()
     doctor_password = models.CharField(max_length=10, validators=[MinLengthValidator(5)])
@@ -21,14 +20,15 @@ class PatientDetails(models.Model):
         (GENDER_FEMALE, "Female"),
         (GENDER_TRANS, "Trans")
     ]
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=30)
     email_id = models.EmailField(unique=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default=GENDER_MALE)
     address = models.CharField(max_length=255)
     dob = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=False, blank=False, unique=False)
-    Doctor = models.ForeignKey(DoctorDetails, on_delete=models.PROTECT)
+    doctor = models.ManyToManyField(DoctorDetails, blank=True)
+
 
 
 class Allergy(models.Model):
@@ -54,3 +54,13 @@ class Allergy(models.Model):
     criticality = models.CharField(max_length=40, choices=CRITICALITY_CHOICE)
     type = models.CharField(max_length=40, choices=TYPE_CHOICE)
     comment = models.CharField(max_length=255, null=True, blank=True)
+
+
+class VitalDetails(models.Model):
+    patient_id = models.ForeignKey(PatientDetails, on_delete=models.CASCADE)
+    weight = models.FloatField()
+    height = models.IntegerField()
+    bloodpressure = models.FloatField()
+    pulse = models.FloatField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    temperature = models.FloatField()
