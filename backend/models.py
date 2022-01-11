@@ -1,12 +1,11 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
-
-from uuid import uuid4
+import uuid
 
 
 # Create your models here.
 class DoctorDetails(models.Model):
-    doctor_id = models.IntegerField()
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     doctor_name = models.TextField()
     doctor_email = models.TextField()
     doctor_password = models.CharField(max_length=10, validators=[MinLengthValidator(5)])
@@ -21,7 +20,7 @@ class PatientDetails(models.Model):
         (GENDER_FEMALE, "Female"),
         (GENDER_TRANS, "Trans")
     ]
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=30)
     email_id = models.EmailField(unique=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default=GENDER_MALE)
