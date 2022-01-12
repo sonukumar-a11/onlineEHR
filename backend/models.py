@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.db.models.deletion import CASCADE
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -30,7 +31,7 @@ class PatientDetails(models.Model):
     address = models.CharField(max_length=255)
     dob = models.DateTimeField()
     phone_number = PhoneNumberField()
-    doctor = models.ManyToManyField(DoctorDetails, blank=True)
+    doctor = models.ForeignKey(DoctorDetails, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
