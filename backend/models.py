@@ -30,7 +30,7 @@ class PatientDetails(models.Model):
     address = models.CharField(max_length=255)
     dob = models.DateTimeField()
     phone_number = PhoneNumberField()
-    doctor = models.ManyToManyField(DoctorDetails, blank=True)
+    doctor = models.ForeignKey(DoctorDetails, blank=True)
 
     def __str__(self):
         return self.name
