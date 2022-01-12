@@ -9,8 +9,8 @@ class DoctorDetails(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     doctor_name = models.CharField(max_length=50)
     doctor_email = models.EmailField(unique=True)
-    # speciality = models.CharField(max_length=30)
-    # phone_number = PhoneNumberField()
+    speciality = models.CharField(max_length=30)
+    phone_number = PhoneNumberField()
     doctor_password = models.CharField(max_length=30)
 
 
