@@ -7,6 +7,7 @@ name = "pypi"
 django = "*"
 #django-phonenumber-field = "*"
 #django-phonenumbers = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

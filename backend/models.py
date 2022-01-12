@@ -7,9 +7,14 @@ from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 class DoctorDetails(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    doctor_name = models.TextField()
-    doctor_email = models.TextField()
-    doctor_password = models.CharField(max_length=10, validators=[MinLengthValidator(5)])
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    phone_number = PhoneNumberField()
+    email_id = models.EmailField(unique=True)
+    speciality = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class PatientDetails(models.Model):
@@ -29,6 +34,19 @@ class PatientDetails(models.Model):
     dob = models.DateTimeField()
     phone_number = PhoneNumberField()
     doctor = models.ManyToManyField(DoctorDetails, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class VitalDetails(models.Model):
+    patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
+    weight = models.FloatField()
+    height = models.IntegerField()
+    blood_pressure = models.FloatField(blank=True)
+    pulse = models.FloatField(blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    temperature = models.FloatField(blank=True)
 
 
 class Allergy(models.Model):
@@ -54,16 +72,6 @@ class Allergy(models.Model):
     criticality = models.CharField(max_length=40, choices=CRITICALITY_CHOICE)
     type = models.CharField(max_length=40, choices=TYPE_CHOICE)
     comment = models.TextField(blank=True)
-
-
-class VitalDetails(models.Model):
-    patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
-    weight = models.FloatField()
-    height = models.IntegerField()
-    bloodpressure = models.FloatField(blank=True)
-    pulse = models.FloatField(blank=True)
-    date_added = models.DateTimeField(auto_now_add=True)
-    temperature = models.FloatField(blank=True)
 
 
 class Medication(models.Model):
