@@ -7,14 +7,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 class DoctorDetails(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    phone_number = PhoneNumberField()
-    email_id = models.EmailField(unique=True)
-    speciality = models.CharField(max_length=30)
-
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+    doctor_name = models.CharField(max_length=50)
+    doctor_email = models.EmailField(unique=True)
+    # speciality = models.CharField(max_length=30)
+    # phone_number = PhoneNumberField()
+    doctor_password = models.CharField(max_length=30)
 
 
 class PatientDetails(models.Model):
@@ -76,7 +73,7 @@ class Allergy(models.Model):
 
 class Medication(models.Model):
     patient = models.ForeignKey(PatientDetails, on_delete=models.PROTECT, related_name='patient_med')
-    doctor = models.ForeignKey(DoctorDetails, on_delete=models.SET_NULL, null=True)
+    doctor = models.ForeignKey(DoctorDetails, on_delete=models.CASCADE, null=True)
     medication_name = models.CharField(max_length=40)
     medication_manufacturer = models.CharField(max_length=40)
     expire = models.DateTimeField()

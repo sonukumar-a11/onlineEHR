@@ -6,7 +6,6 @@ class DoctorDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoctorDetails
         fields = '__all__'
-        exclude = ['doctor_password']
 
 class PatientDetailsSerializer(serializers.ModelSerializer):
     class Meta:
