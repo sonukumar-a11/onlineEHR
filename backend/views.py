@@ -9,8 +9,6 @@ from .models import DoctorDetails, PatientDetails
 import uuid
 from .serializers import DoctorDetailsSerializer, PatientDetailsSerializer
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 
 class DoctorViewSet(ModelViewSet):
@@ -27,7 +25,7 @@ class DoctorViewSet(ModelViewSet):
         except:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+    
 class PatientViewSet(ModelViewSet):
     queryset = PatientDetails.objects.all()
     serializer_class = PatientDetailsSerializer
