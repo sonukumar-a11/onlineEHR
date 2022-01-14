@@ -64,6 +64,7 @@ class Allergy(models.Model):
         ("1", "Allergy"),
         ("2", "Intolerance")
     ]
+    
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="patient_allergy")
     substance = models.CharField(max_length=30, null=True, blank=True)
     verification_status = models.CharField(max_length=40, choices=VERIFICATION_STATUS_CHOICE)
