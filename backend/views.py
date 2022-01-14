@@ -162,7 +162,12 @@ class PatientViewSet(ModelViewSet):
     @action(methods=['post'], detail=True)
     def addpatient(self, request, *args, **kwargs):
         target_user = uuid.UUID(kwargs['doctorid'])
-        serializer = PatientDetailsSerializer(data=request.data)
+        
+        data = request.data
+        data['doctor']=target_user
+
+        serializer = PatientDetailsSerializer(data=data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
