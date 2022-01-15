@@ -18,6 +18,19 @@ from backend import serializers
 from .utils import Util
 
 
+class GetAllPatients(APIView):
+    def get(self, request, doctorid):
+        serializer_class = PatientDetailsSerializer
+        try:
+            patients = PatientDetails.objects.filter(doctor = doctorid)
+            return Response(PatientDetailsSerializer(patients, many=True).data, status=status.HTTP_200_OK)
+        except:
+            content = {'Patient not found'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            
+
+
+
 class IndAllergyViewSet(APIView):
     def post(self, request, patientid, id):
         serializer_class = AllergySerializer
