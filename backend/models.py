@@ -3,17 +3,9 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.db.models.deletion import CASCADE
 from phonenumber_field.modelfields import PhoneNumberField
-
+from accounts.models import Profile
 
 # Create your models here.
-class DoctorDetails(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    doctor_name = models.CharField(max_length=50)
-    doctor_email = models.EmailField(unique=True)
-    speciality = models.CharField(max_length=30)
-    phone_number = PhoneNumberField()
-    doctor_password = models.CharField(max_length=30)
-
 
 class PatientDetails(models.Model):
     GENDER_MALE = "M"
@@ -31,7 +23,7 @@ class PatientDetails(models.Model):
     address = models.CharField(max_length=255)
     dob = models.DateTimeField()
     phone_number = PhoneNumberField()
-    doctor = models.ForeignKey(DoctorDetails, blank=True, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Profile, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -74,8 +66,7 @@ class Allergy(models.Model):
 
 
 class Medication(models.Model):
-    patient = models.ForeignKey(PatientDetails, on_delete=models.PROTECT, related_name='patient_med')
-    doctor = models.ForeignKey(DoctorDetails, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name='patient_med')
     medication_name = models.CharField(max_length=40)
     medication_manufacturer = models.CharField(max_length=40)
     expire = models.DateTimeField()
@@ -102,9 +93,8 @@ class ProblemDetails(models.Model):
     status = models.CharField(max_length=15, choices=STATUS, default="Active")
     start_date = models.DateField()
     end_date = models.DateField()
-    patient = models.ForeignKey(PatientDetails, on_delete=models.PROTECT, related_name="problem_patient")
-    doctor = models.ForeignKey(DoctorDetails, on_delete=models.PROTECT)
-
+    patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="problem_patient")
+   
 
 class SocialHistory(models.Model):
     SMOKE_STATUS = [

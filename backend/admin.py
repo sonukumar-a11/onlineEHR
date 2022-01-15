@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import DoctorDetails, PatientDetails, Allergy, VitalDetails, Medication, Dosage, ProblemDetails, SocialHistory
+from .models import PatientDetails, Allergy, VitalDetails, Medication, Dosage, ProblemDetails, SocialHistory
 # Register your models here.
 
-admin.site.register(DoctorDetails)
 admin.site.register(PatientDetails)
 admin.site.register(Allergy)
 admin.site.register(VitalDetails)

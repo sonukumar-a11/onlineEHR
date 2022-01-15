@@ -1,14 +1,13 @@
 from django.db.models.fields import UUIDField
-from django.http.response import HttpResponse
-from django.shortcuts import render, HttpResponse
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
+from accounts.models import Profile
 # from .serializers import DoctorDetailSerializer
-from .models import DoctorDetails, PatientDetails, VitalDetails, Allergy, Medication,Dosage
+from .models import  PatientDetails, VitalDetails, Allergy, Medication,Dosage
 import uuid
-from .serializers import DoctorDetailsSerializer, PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, DosageSerializer
+from .serializers import  PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, DosageSerializer
 from rest_framework import status
 
 from backend import serializers
@@ -30,7 +29,6 @@ class IndAllergyViewSet(APIView):
         
         data=request.data
         data['patient']=patientid
-        print(data)
         serializer = AllergySerializer(allergydetail,data=data)
         if serializer.is_valid():
             serializer.save()
@@ -76,7 +74,6 @@ class AllergyDetailsViewSet(APIView):
         
         data=request.data
         data['patient']=patientid
-        print(data)
         serializer = AllergySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -140,19 +137,19 @@ class VitalDetailsViewSet(APIView):
     
 
 
-class DoctorViewSet(ModelViewSet):
-    queryset = DoctorDetails.objects.all()
-    serializer_class = DoctorDetailsSerializer
+# class DoctorViewSet(ModelViewSet):
+#     queryset = Profile.objects.all()
+#     serializer_class = DoctorDetailsSerializer
         
-    @action(methods=['get'], detail=True)
-    def me(self, request, *args, **kwargs):
-        target_user = uuid.UUID(kwargs['doctorid'])
-        try:
-            doctor = DoctorDetails.objects.get(id=target_user)
-            serializer = DoctorDetailsSerializer(doctor)
-            return Response(serializer.data,status=status.HTTP_200_OK)
-        except:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     @action(methods=['get'], detail=True)
+#     def me(self, request, *args, **kwargs):
+#         target_user = uuid.UUID(kwargs['doctorid'])
+#         try:
+#             doctor = DoctorDetails.objects.get(id=target_user)
+#             serializer = DoctorDetailsSerializer(doctor)
+#             return Response(serializer.data,status=status.HTTP_200_OK)
+#         except:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
 class PatientViewSet(ModelViewSet):
@@ -173,32 +170,31 @@ class PatientViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class MedicationViewSet(ModelViewSet):
-    queryset = Medication.objects.all()
-    serializer_class = MedicationSerializer
 
-    @action(methods=['get','post'], detail=True)
-    def meds(self, request, *args, **kwargs):
-        if request.method == 'GET':
-            target_user = uuid.UUID(kwargs['patientid'])
-            print(target_user)
-            try:
-                patient = PatientDetails.objects.get(id=target_user)
-                meds = Medication.objects.get(patient=patient)
-                serializer = MedicationSerializer(meds)
-                return Response(serializer.data,status=status.HTTP_200_OK)
-            except:
-                content = {"Not found"}
-                return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            serializer = MedicationSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #serializer_class = DosageSerializer
-    #queryset = Dosage.objects.all()
-    #@action(methods=['post' , 'put' , 'get'], detail=True)
+class MedicationViewSet(APIView):
+
+    def get(self, request, patientid):
+        serializer_class = MedicationSerializer
+        patientid = uuid.UUID(patientid)
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+            meds = Medication.objects.filter(patient=patient)
+            serializer = MedicationSerializer(meds, many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except:
+            content = {"Not found"}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def post(self, request, patientid):
+        data=request.data
+        data['patient']=patientid
+        serializer = MedicationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
 
 class DosageViewSet(ModelViewSet):
     queryset = Dosage.objects.all()
@@ -206,23 +202,21 @@ class DosageViewSet(ModelViewSet):
 
     @action(methods=['get'], detail=True)
     def dose(self, request, *args, **kwargs):
-        if request.method == 'GET':
             target_user = int(kwargs['medid'])
-            print(target_user)
             try:
                 medication = Medication.objects.get(pk=target_user)
-                print(medication)
                 dosy = Dosage.objects.get(medication=medication) 
-                print(dosy) 
                 serializer = DosageSerializer(dosy) 
-                print(serializer.data)
                 return Response(serializer.data,status=status.HTTP_200_OK)
             except:
                 content = {"Not found"}
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
     
     def adddose(self, request, *args, **kwargs):
-            serializer = DosageSerializer(data=request.data)
+            target_user = int(kwargs['medid'])
+            data=request.data
+            data['medication']=target_user
+            serializer = DosageSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

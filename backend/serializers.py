@@ -16,10 +16,6 @@ class ChoicesSerializerField(serializers.SerializerMethodField):
         return method()
 
 
-class DoctorDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DoctorDetails
-        fields = '__all__'
 
 class PatientDetailsSerializer(serializers.ModelSerializer):
     class Meta:
