@@ -5,11 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
 # from .serializers import DoctorDetailSerializer
-from .models import  PatientDetails, VitalDetails, Allergy, Medication,Dosage
+from .models import  PatientDetails, VitalDetails, Allergy, Medication,Dosage, ProblemDetails, SocialHistory
 import uuid
-from .serializers import  PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, DosageSerializer
+from .serializers import  PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, DosageSerializer, ProblemDetailsSerializer, SocialHistorySerializer
 from rest_framework import status
-
+from rest_framework.permissions import AllowAny
 from backend import serializers
 
 
@@ -152,7 +152,7 @@ class VitalDetailsViewSet(APIView):
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
-class PatientViewSet(ModelViewSet):
+class PatientAddViewSet(ModelViewSet):
     queryset = PatientDetails.objects.all()
     serializer_class = PatientDetailsSerializer
 
@@ -170,6 +170,34 @@ class PatientViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PatientViewSet(APIView):  
+    def get(self, request,patientid):
+        serializer_class = PatientDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+            return Response(PatientDetailsSerializer(patient).data,status=status.HTTP_200_OK)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, patientid):
+        serializer_class = PatientDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+            serializer = PatientDetailsSerializer(patient, data=request.data)
+            # print(vitaldetails)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+    
 
 class MedicationViewSet(APIView):
 
@@ -221,3 +249,108 @@ class DosageViewSet(ModelViewSet):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProblemViewSet(APIView):
+    def get(self, request, patientid):
+        serializer_class = ProblemDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            problemdetails = ProblemDetails.objects.filter(patient=patient)
+            return Response(ProblemDetailsSerializer(problemdetails,many=True).data, status=status.HTTP_200_OK)
+        except:
+            content = {'Problem details not found'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+
+    def post(self, request, patientid):
+        serializer_class = ProblemDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+            data=request.data
+            data['patient'] = patientid
+            serializer = ProblemDetailsSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+class IndProblemViewSet(APIView):
+    def post(self, request, patientid, id):
+        serializer_class = ProblemDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            problem = ProblemDetails.objects.get(id=id)
+            data=request.data
+            data['patient'] = patientid
+            serializer = ProblemDetailsSerializer(problem,data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+    
+class SocialViewSet(APIView):
+    def get(self, request, patientid):
+        serializer_class = SocialHistorySerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            socialdetails = SocialHistory.objects.get(patient=patient)
+            return Response(SocialHistorySerializer(socialdetails).data, status=status.HTTP_200_OK)
+        except:
+            content = {'social details not found'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+
+    def post(self, request, patientid):
+        serializer_class = SocialHistorySerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            socialdetails = SocialHistory.objects.get(patient=patient)
+            data=request.data
+            data['patient']=patientid
+            serializer = SocialHistorySerializer(socialdetails, data=data)
+            # print(vitaldetails)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            data=request.data
+            data['patient']=patientid
+            print(data)
+            serializer = SocialHistorySerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
