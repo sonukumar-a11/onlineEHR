@@ -8,6 +8,11 @@ django = "*"
 #django-phonenumber-field = "*"
 #django-phonenumbers = "*"
 djangorestframework = "*"
+phonenumbers = "*"
+django-phonenumber-field = "*"
+psycopg2-binary = "*"
+django-cors-headers = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
