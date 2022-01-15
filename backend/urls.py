@@ -1,4 +1,6 @@
 from django.urls.conf import path
+
+from backend.models import VitalDetails
 from . import views
 
 urlpatterns = [
@@ -10,3 +12,11 @@ urlpatterns = [
     path('api/patients/<str:patientid>/allergy',views.AllergyDetailsViewSet.as_view()),
     path('api/patient/<str:patientid>/allergy/<int:id>',views.IndAllergyViewSet.as_view())
 ]
+
+# PATIENTS DASHBOARD: (DONE) profile (me), patient problem (get) , 
+
+# vital details(get), medications(get), social history(get), allergies (get) 
+
+
+
+

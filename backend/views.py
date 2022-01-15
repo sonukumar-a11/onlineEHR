@@ -1,6 +1,7 @@
 from django.db.models.fields import UUIDField
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
+from rest_framework import generics ,permissions
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
