@@ -422,7 +422,7 @@ class PatientVitalDetailsViewSet(APIView):
         patientid = uuid.UUID(patientid)
         patient = None
         try:
-            patient = VitalDetails.objects.get(id=patientid)
+            patient = PatientDetails.objects.get(id=patientid)
         except:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
