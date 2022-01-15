@@ -398,9 +398,6 @@ class PatientDashboardViewSet(RetrieveModelMixin, GenericViewSet):
         if self.request.method == "GET":
             return PatientDashboardSerializer
 
-    # def get_serializer_context(self):
-    #     return {'doctor_name'}
-
     @action(detail=True, methods=["GET", "PUT"])
     def me(self, request, *args, **kwargs):
         Patient = get_object_or_404(PatientDetails, pk=self.kwargs['patientid'])
@@ -506,3 +503,23 @@ class PatientDoseDetailsViewSet(APIView):
         except:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+class PatientProblemDetailsViewSet(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, patientid):
+        serializer_class = ProblemDetailsSerializer
+        patientid = uuid.UUID(patientid)
+        patient = None
+        try:
+            patient = PatientDetails.objects.get(id=patientid)
+        except:
+            content = {'Patient does not exist'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            problemdetails = ProblemDetails.objects.filter(patient=patient)
+            return Response(ProblemDetailsSerializer(problemdetails, many=True).data, status=status.HTTP_200_OK)
+        except:
+            content = {'Problem details not found'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
