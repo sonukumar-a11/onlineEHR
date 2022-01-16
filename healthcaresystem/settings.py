@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'rest_framework',
     'backend.apps.BackendConfig',
-    'accounts.apps.AccountsConfig'
+    'accounts'
 ]
 
 REST_FRAMEWORK = {
@@ -177,3 +177,6 @@ DEFAULT_FROM_EMAIL = 'from@mosh.com'
 
 # for us regin only
 # PHONENUMBER_DEFAULT_REGION = 'US'
+
+
+AUTH_USER_MODEL = 'accounts.User'
