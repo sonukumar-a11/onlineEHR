@@ -1,11 +1,7 @@
 import uuid
 from django.db import models
-from django.core.validators import MinLengthValidator
-from django.db.models.deletion import CASCADE
 from phonenumber_field.modelfields import PhoneNumberField
 from accounts.models import Profile
-
-# Create your models here.
 
 class PatientDetails(models.Model):
     GENDER_MALE = "M"
@@ -21,7 +17,7 @@ class PatientDetails(models.Model):
     email_id = models.EmailField(unique=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default=GENDER_MALE)
     address = models.CharField(max_length=255)
-    dob = models.DateTimeField()
+    dob = models.DateField()
     phone_number = PhoneNumberField()
     doctor = models.ForeignKey(Profile, blank=True, on_delete=models.CASCADE)
 
@@ -31,12 +27,12 @@ class PatientDetails(models.Model):
 
 class VitalDetails(models.Model):
     patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
-    weight = models.FloatField()
-    height = models.IntegerField()
-    blood_pressure = models.FloatField(blank=True)
-    pulse = models.FloatField(blank=True)
-    date_added = models.DateTimeField(auto_now_add=True)
-    temperature = models.FloatField(blank=True)
+    weight = models.DecimalField()
+    height = models.DecimalField()
+    blood_pressure = models.DecimalField(blank=True)
+    pulse = models.DecimalField(blank=True)
+    date_added = models.DateField(auto_now_add=True)
+    temperature = models.DecimalField(blank=True)
 
 
 class Allergy(models.Model):
@@ -56,7 +52,7 @@ class Allergy(models.Model):
         ("1", "Allergy"),
         ("2", "Intolerance")
     ]
-    
+
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="patient_allergy")
     substance = models.CharField(max_length=30, null=True, blank=True)
     verification_status = models.CharField(max_length=40, choices=VERIFICATION_STATUS_CHOICE)
@@ -92,9 +88,9 @@ class ProblemDetails(models.Model):
     severity = models.CharField(max_length=10, choices=SEVERITIES, default="Mild")
     status = models.CharField(max_length=15, choices=STATUS, default="Active")
     start_date = models.DateField()
-    end_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="problem_patient")
-   
+
 
 class SocialHistory(models.Model):
     SMOKE_STATUS = [
