@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate
 
 from .models import Profile
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # ProfileSerializer
 class ProfileSerializer(serializers.ModelSerializer):
@@ -27,19 +29,22 @@ class GetUserSerializer(serializers.ModelSerializer):
         except:
             return None
 
-
-# login serializer
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField()
 
-    def validate(self, data):
-        print(data)
-        user = authenticate(**data)
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        password = attrs.get('password', '')
+        filtered_user_by_email = User.objects.filter(email=email)
+        user = authenticate(email=email, password=password)
         if not user:
             raise serializers.ValidationError("username or password Incorrect")
 
-        return data
+        return attrs
+
+
+
 
     # Register Serializer
 
