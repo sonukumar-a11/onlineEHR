@@ -1,8 +1,8 @@
-from django.urls.conf import path, include
+from django.urls.conf import path
 from . import views
 
 urlpatterns = [
-    path('api/doctors/<str:doctorid>/getpatients',views.GetAllPatients.as_view()),
+    path('api/doctors/<str:doctorid>/getpatients', views.GetAllPatients.as_view()),
     path('api/doctors/<str:doctorid>/search/<str:search_term>', views.SearchPatient.as_view()),
     path('api/doctors/<str:doctorid>/me', views.meViewSet.as_view()),
     path('api/doctors/<str:doctorid>/addpatient', views.PatientAddViewSet.as_view({"post": "addpatient"})),
@@ -23,7 +23,3 @@ urlpatterns = [
     path('api/patient/<int:medid>/dose/', views.PatientDoseDetailsViewSet.as_view()),
     path('api/patient/<str:patientid>/problem', views.PatientProblemDetailsViewSet.as_view())
 ]
-
-
-
-

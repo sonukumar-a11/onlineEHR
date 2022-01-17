@@ -3,6 +3,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from accounts.models import Profile
 
+
 class PatientDetails(models.Model):
     GENDER_MALE = "M"
     GENDER_FEMALE = "F"
@@ -27,12 +28,15 @@ class PatientDetails(models.Model):
 
 class VitalDetails(models.Model):
     patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
-    weight = models.DecimalField()
-    height = models.DecimalField()
-    blood_pressure = models.DecimalField(blank=True)
-    pulse = models.DecimalField(blank=True)
+    weight = models.IntegerField()
+    height = models.IntegerField()
+    blood_pressure = models.IntegerField(blank=True)
+    pulse = models.IntegerField(blank=True)
     date_added = models.DateField(auto_now_add=True)
-    temperature = models.DecimalField(blank=True)
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
+
+    def __str__(self):
+        return self.patient.name
 
 
 class Allergy(models.Model):
@@ -60,13 +64,19 @@ class Allergy(models.Model):
     type = models.CharField(max_length=40, choices=TYPE_CHOICE)
     comment = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.substance
+
 
 class Medication(models.Model):
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name='patient_med')
     medication_name = models.CharField(max_length=40)
     medication_manufacturer = models.CharField(max_length=40)
-    expire = models.DateTimeField()
+    expire = models.DateField()
     amount = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return self.medication_name
 
 
 class Dosage(models.Model):
@@ -78,6 +88,9 @@ class Dosage(models.Model):
     dose_amount = models.PositiveSmallIntegerField()
     dose_timing = models.CharField(max_length=20, choices=DOSETIMECHOICE)
     dose_description = models.TextField()
+
+    def __str__(self):
+        return self.medication.medication_name
 
 
 class ProblemDetails(models.Model):
@@ -91,18 +104,23 @@ class ProblemDetails(models.Model):
     end_date = models.DateField(null=True, blank=True)
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name="problem_patient")
 
+    def __str__(self):
+        return self.problem_name
 
 class SocialHistory(models.Model):
     SMOKE_STATUS = [
-        ("1", "Never Smoked"),
-        ("2", "Current Smoker"),
-        ("3", "Former Smoker")
+        ("Never Smoked", "Never Smoked"),
+        ("Current Smoker", "Current Smoker"),
+        ("Former Smoker", "Former Smoker")
     ]
     DRINK_STATUS = [
-        ("1", "Current drinker"),
-        ("2", "Former drinker"),
-        ("3", "Lifetime Non-drinker")
+        ("Current drinker", "Current drinker"),
+        ("Former drinker", "Former drinker"),
+        ("Lifetime Non-drinker", "Lifetime Non-drinker")
     ]
     tobacco = models.CharField(choices=SMOKE_STATUS, default="Never Smoked", max_length=100)
     alcohol = models.CharField(choices=DRINK_STATUS, default="Current Drinker", max_length=100)
     patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE, related_name='patient_smoker')
+
+    def __str__(self):
+        return self.patient.name

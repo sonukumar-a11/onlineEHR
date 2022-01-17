@@ -18,6 +18,8 @@ class ChoicesSerializerField(serializers.SerializerMethodField):
 
 
 class PatientDetailsSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+
     class Meta:
         model = PatientDetails
         fields = '__all__'
@@ -69,6 +71,7 @@ class SimpleProblemPatient(serializers.ModelSerializer):
     class Meta:
         model = ProblemDetails
         fields = ['problem_name', 'start_date', 'end_date']
+
 
 class PatientDashboardSerializer(serializers.ModelSerializer):
     doctor = SimpleDoctorSerializer()

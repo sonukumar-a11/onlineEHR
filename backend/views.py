@@ -1,7 +1,7 @@
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
-from rest_framework import generics ,permissions
+from rest_framework import generics, permissions
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
@@ -16,19 +16,18 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from backend import serializers
 from .utils import Util
+from accounts.models import User
 
 
 class GetAllPatients(APIView):
     def get(self, request, doctorid):
         serializer_class = PatientDetailsSerializer
         try:
-            patients = PatientDetails.objects.filter(doctor = doctorid)
+            patients = PatientDetails.objects.filter(doctor=doctorid)
             return Response(PatientDetailsSerializer(patients, many=True).data, status=status.HTTP_200_OK)
         except:
             content = {'Patient not found'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-            
-
 
 
 class IndAllergyViewSet(APIView):
@@ -158,16 +157,13 @@ class meViewSet(APIView):
         target_user = uuid.UUID(kwargs['doctorid'])
         try:
             doctor = Profile.objects.get(id=target_user)
-            print("id", target_user)
             serializer = DoctorDetailsSerializer(doctor)
             data = serializer.data
-            print(data)
             doctor_id = data['id']
             user = User.objects.get(profile=doctor_id)
             name = user.first_name + " " + user.last_name
             data['doctor_name'] = name
             data['doctor_email'] = user.email
-
             return Response(data, status=status.HTTP_200_OK)
         except:
             content = {"Doctor Not Found"}
@@ -183,7 +179,7 @@ class PatientAddViewSet(ModelViewSet):
         target_user = uuid.UUID(kwargs['doctorid'])
 
         data = request.data
-        data['doctor'] = target_user
+        #
 
         serializer = PatientDetailsSerializer(data=data)
 
@@ -503,6 +499,7 @@ class PatientDoseDetailsViewSet(APIView):
         except:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PatientProblemDetailsViewSet(APIView):
     permission_classes = [AllowAny]
