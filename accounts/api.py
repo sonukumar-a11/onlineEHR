@@ -17,8 +17,9 @@ from .serializers import (
     UserValidationSer
 )
 
-from .models import Profile
-from .custom_permissions import isTheSameUser
+from .models import Profile, User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class GetUserAPI(generics.RetrieveAPIView):
@@ -33,14 +34,19 @@ class GetUserAPI(generics.RetrieveAPIView):
 
 
 class LoginAPI(generics.GenericAPIView):
-    permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+<<<<<<< HEAD
         username = serializer.validated_data['username']
         user = User.objects.get(username=username)
+=======
+        email = serializer.validated_data['email']
+        user = User.objects.get(email=email)
+
+>>>>>>> 23c0469c7a84fc4bb32d612dbeb9e00d813eb7c8
         refresh = RefreshToken.for_user(user)
         myserializeddata = GetUserSerializer(user)
 
