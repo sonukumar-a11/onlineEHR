@@ -5,24 +5,66 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
+from rest_framework.authentication import get_authorization_header
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from .models import PatientDetails, VitalDetails, Allergy, Medication, Dosage, ProblemDetails, SocialHistory
 import uuid
 from .serializers import PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, \
     DosageSerializer, ProblemDetailsSerializer, SocialHistorySerializer, PatientDashboardSerializer, \
     DoctorDashboardSerializer, DoctorDetailsSerializer
-from rest_framework import status
+from rest_framework import status, exceptions
 from rest_framework.permissions import AllowAny
 from backend import serializers
 from .utils import Util
+from django.conf import settings
+import jwt
+
+
+def getToken(request, doctorid=None, patientid=None):
+    auth_header = get_authorization_header(request)
+    auth_data = auth_header.decode('utf-8')
+    auth_token = auth_data.split(" ")
+    if len(auth_token) != 2:
+        raise exceptions.AuthenticationFailed("Token not valid")
+    token = auth_token[1]
+
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms="HS256")
+        userid = str(payload['user'])
+
+        if doctorid is not None:
+            doctorid = str(doctorid)
+            if userid == doctorid:
+                return token
+            return None
+        else:
+            doctor = str(PatientDetails.objects.get(id=patientid).doctor.id)
+            if userid == doctor:
+                return token
+            return None
+    except jwt.ExpiredSignatureError as ex:
+        raise exceptions.AuthenticationFailed("Token is expired,login again")
+    except jwt.DecodeError as ex:
+        raise exceptions.AuthenticationFailed("Token is invalid")
+
+    except Profile.DoesNotExist as no_users:
+        raise exceptions.AuthenticationFailed("No such user")
+
+
 from accounts.models import User
 
 
 class GetAllPatients(APIView):
     def get(self, request, doctorid):
+
         serializer_class = PatientDetailsSerializer
         try:
             patients = PatientDetails.objects.filter(doctor=doctorid)
+            token = getToken(request, doctorid, None)
+            if token is None:
+                content = {'Invalid token'}
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
             return Response(PatientDetailsSerializer(patients, many=True).data, status=status.HTTP_200_OK)
         except:
             content = {'Patient not found'}
@@ -40,6 +82,11 @@ class IndAllergyViewSet(APIView):
         except:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         allergydetail = Allergy.objects.get(pk=id)
 
@@ -67,6 +114,11 @@ class AllergyDetailsViewSet(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
+            token = getToken(request, None, patientid)
+            if token is None:
+                content = {'Invalid token'}
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
             allergydetails = Allergy.objects.filter(patient=patient)
             return Response(AllergySerializer(allergydetails, many=True).data, status=status.HTTP_200_OK)
         except:
@@ -82,6 +134,11 @@ class AllergyDetailsViewSet(APIView):
         except:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         data = request.data
         data['patient'] = patientid
@@ -105,6 +162,11 @@ class VitalDetailsViewSet(APIView):
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             vitaldetails = VitalDetails.objects.get(patient=patient)
             return Response(VitalDetailsSerializer(vitaldetails).data, status=status.HTTP_200_OK)
@@ -121,6 +183,11 @@ class VitalDetailsViewSet(APIView):
         except:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             vitaldetails = VitalDetails.objects.get(patient=patient)
@@ -144,25 +211,42 @@ class VitalDetailsViewSet(APIView):
 
 class SearchPatient(APIView):
     def get(self, request, doctorid, search_term):
-        doctor = Profile.objects.get(pk=doctorid)
-        patient = PatientDetails.objects.filter(doctor=doctor)
-        patient = PatientDetails.objects.filter(doctor=doctor).filter(name__icontains=search_term)
-        serializer = DoctorDashboardSerializer(patient, many=True)
-        return Response(serializer.data)
+        token = getToken(request, doctorid, None)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            doctor = Profile.objects.get(pk=doctorid)
+            patient = PatientDetails.objects.filter(doctor=doctor)
+            patient = PatientDetails.objects.filter(doctor=doctor).filter(name__icontains=search_term)
+            serializer = DoctorDashboardSerializer(patient, many=True)
+            return Response(serializer.data)
+        except:
+            return Response({'Doctor not found for this id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class meViewSet(APIView):
     def get(self, request, *args, **kwargs):
         target_user = uuid.UUID(kwargs['doctorid'])
+        token = getToken(request, target_user, None)
+        print("line number 238", token)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             doctor = Profile.objects.get(id=target_user)
+            print("id", target_user)
             serializer = DoctorDetailsSerializer(doctor)
             data = serializer.data
+            print(data)
             doctor_id = data['id']
             user = User.objects.get(profile=doctor_id)
             name = user.first_name + " " + user.last_name
             data['doctor_name'] = name
             data['doctor_email'] = user.email
+
             return Response(data, status=status.HTTP_200_OK)
         except:
             content = {"Doctor Not Found"}
@@ -176,7 +260,15 @@ class PatientAddViewSet(ModelViewSet):
     @action(methods=['post'], detail=True)
     def addpatient(self, request, *args, **kwargs):
         target_user = uuid.UUID(kwargs['doctorid'])
+
+        token = getToken(request, target_user, None)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         data = request.data
+        data['doctor'] = target_user
+
         serializer = PatientDetailsSerializer(data=data)
 
         if serializer.is_valid():
@@ -184,7 +276,8 @@ class PatientAddViewSet(ModelViewSet):
             user_data = serializer.data
             user = PatientDetails.objects.get(email_id=user_data['email_id'])
             print(user)
-            email_body = 'Welcome {} To The Online EHR \n \n Please use the below credential for login \n'.format(user.name) + str(
+            email_body = 'Welcome {} To The Online EHR \n \n Please use the below credential for login \n'.format(
+                user.name) + str(
                 user.id) + " " + 'use only for personal Use'
             data = {
                 'email_body': email_body,
@@ -210,10 +303,17 @@ class PatientViewSet(APIView):
     def put(self, request, patientid):
         serializer_class = PatientDetailsSerializer
         patientid = uuid.UUID(patientid)
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
             serializer = PatientDetailsSerializer(patient, data=request.data)
+            # print(vitaldetails)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -228,6 +328,12 @@ class MedicationViewSet(APIView):
     def get(self, request, patientid):
         serializer_class = MedicationSerializer
         patientid = uuid.UUID(patientid)
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             patient = PatientDetails.objects.get(id=patientid)
             meds = Medication.objects.filter(patient=patient)
@@ -238,6 +344,12 @@ class MedicationViewSet(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, patientid):
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         data = request.data
         data['patient'] = patientid
         serializer = MedicationSerializer(data=data)
@@ -276,6 +388,11 @@ class DosageViewSet(ModelViewSet):
 
 class ProblemViewSet(APIView):
     def get(self, request, patientid):
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         serializer_class = ProblemDetailsSerializer
         patientid = uuid.UUID(patientid)
         patient = None
@@ -293,6 +410,11 @@ class ProblemViewSet(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, patientid):
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         serializer_class = ProblemDetailsSerializer
         patientid = uuid.UUID(patientid)
         patient = None
@@ -312,6 +434,12 @@ class ProblemViewSet(APIView):
 
 class IndProblemViewSet(APIView):
     def post(self, request, patientid, id):
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         serializer_class = ProblemDetailsSerializer
         patientid = uuid.UUID(patientid)
         patient = None
@@ -331,6 +459,12 @@ class IndProblemViewSet(APIView):
 
 class SocialViewSet(APIView):
     def get(self, request, patientid):
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         serializer_class = SocialHistorySerializer
         patientid = uuid.UUID(patientid)
         patient = None
@@ -348,6 +482,12 @@ class SocialViewSet(APIView):
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, patientid):
+
+        token = getToken(request, None, patientid)
+        if token is None:
+            content = {'Invalid token'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
         serializer_class = SocialHistorySerializer
         patientid = uuid.UUID(patientid)
         patient = None
