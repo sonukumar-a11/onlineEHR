@@ -109,14 +109,14 @@ class ProblemDetails(models.Model):
 
 class SocialHistory(models.Model):
     SMOKE_STATUS = [
-        ("Never Smoked", "Never Smoked"),
-        ("Current Smoker", "Current Smoker"),
-        ("Former Smoker", "Former Smoker")
+        ("1", "Never Smoked"),
+        ("2", "Current Smoker"),
+        ("3", "Former Smoker")
     ]
     DRINK_STATUS = [
-        ("Current drinker", "Current drinker"),
-        ("Former drinker", "Former drinker"),
-        ("Lifetime Non-drinker", "Lifetime Non-drinker")
+        ("1", "Current drinker"),
+        ("2", "Former drinker"),
+        ("3", "Lifetime Non-drinker")
     ]
     tobacco = models.CharField(choices=SMOKE_STATUS, default="Never Smoked", max_length=100)
     alcohol = models.CharField(choices=DRINK_STATUS, default="Current Drinker", max_length=100)
