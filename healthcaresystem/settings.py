@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
@@ -171,8 +171,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST_USER = 'serviceonlineehr@gmail.com'
-EMAIL_HOST_PASSWORD = 'Nexa9491@'
+EMAIL_HOST_PASSWORD = 'kitelredgfkuynsv'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
 AUTH_USER_MODEL = 'accounts.User'
