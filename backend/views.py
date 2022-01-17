@@ -191,7 +191,9 @@ class VitalDetailsViewSet(APIView):
 
         try:
             vitaldetails = VitalDetails.objects.get(patient=patient)
-            serializer = VitalDetailsSerializer(vitaldetails, data=request.data)
+            data = request.data
+            data['patient'] = patientid
+            serializer = VitalDetailsSerializer(vitaldetails, data=data)
             print(vitaldetails)
             if serializer.is_valid():
                 serializer.save()

@@ -1,0 +1,14 @@
+@media screen and (max-width: 721px) {
+    .nn {
+      flex-direction: column;
+    }
+  }
+
+  .new:hover{
+      text-decoration: none;
+  }
+  .new{
+    text-decoration: none;
+}
+
+

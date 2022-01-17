@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'rest_framework',
+    'corsheaders',
     'backend.apps.BackendConfig',
     'accounts'
 ]
@@ -175,3 +176,8 @@ EMAIL_HOST_PASSWORD = 'kitelredgfkuynsv'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 AUTH_USER_MODEL = 'accounts.User'
+
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]

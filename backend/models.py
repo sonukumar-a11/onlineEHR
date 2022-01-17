@@ -30,10 +30,9 @@ class VitalDetails(models.Model):
     patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
     weight = models.IntegerField()
     height = models.IntegerField()
-    blood_pressure = models.IntegerField(blank=True)
-    pulse = models.IntegerField(blank=True)
-    date_added = models.DateField(auto_now_add=True)
-    temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
+    blood_pressure = models.IntegerField(null=True,blank=True)
+    pulse = models.IntegerField(null=True,blank=True)
+    temperature = models.DecimalField(max_digits=5, decimal_places=2,null=True, blank=True)
 
     def __str__(self):
         return self.patient.name
@@ -62,7 +61,7 @@ class Allergy(models.Model):
     verification_status = models.CharField(max_length=40, choices=VERIFICATION_STATUS_CHOICE)
     criticality = models.CharField(max_length=40, choices=CRITICALITY_CHOICE)
     type = models.CharField(max_length=40, choices=TYPE_CHOICE)
-    comment = models.TextField(blank=True)
+    comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.substance
@@ -71,9 +70,9 @@ class Allergy(models.Model):
 class Medication(models.Model):
     patient = models.ForeignKey(PatientDetails, on_delete=models.CASCADE, related_name='patient_med')
     medication_name = models.CharField(max_length=40)
-    medication_manufacturer = models.CharField(max_length=40)
-    expire = models.DateField()
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
+    medication_manufacturer = models.CharField(max_length=40, null=True, blank=True)
+    expire = models.DateField(null=True, blank=True)
+    amount = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.medication_name

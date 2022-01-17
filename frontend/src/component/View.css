@@ -1,0 +1,183 @@
+body{
+    margin-top:20px;
+    background:#eee;
+    background-color: lightblue;
+}
+
+
+.project .row {
+    margin: 0;
+    padding: 15px 0;
+    margin-bottom: 15px
+}
+
+.project div[class*='col-'] {
+    border-right: 1px solid #eee
+}
+
+.project .text h3 {
+    margin-bottom: 0;
+    color: #555
+}
+
+.project .text small {
+    color: #aaa;
+    font-size: 0.75em
+}
+
+.project .project-date span {
+    font-size: 0.9em;
+    color: #999
+}
+
+.project .image {
+    max-width: 50px;
+    min-width: 50px;
+    height: 50px;
+    margin-right: 15px
+}
+
+.project .time,
+.project .comments,
+.project .project-progress {
+    color: #999;
+    font-size: 0.9em;
+    margin-right: 20px
+}
+
+.project .time i,
+.project .comments i,
+.project .project-progress i {
+    margin-right: 5px
+}
+
+.project .project-progress {
+    width: 200px
+}
+
+.project .project-progress .progress {
+    height: 4px
+}
+
+.project .card {
+    margin-bottom: 0
+}
+
+@media (max-width: 991px) {
+    .project .right-col {
+        margin-top: 20px;
+        margin-left: 65px
+    }
+    .project .project-progress {
+        width: 150px
+    }
+}
+
+@media (max-width: 480px) {
+    .project .project-progress {
+        display: none
+    }
+}
+.has-shadow {
+    -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.1), -1px 0 2px rgba(0,0,0,0.05);
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.1), -1px 0 2px rgba(0,0,0,0.05);
+}
+.bg-white {
+    background: #fff !important;
+}
+
+.bg-red {
+    background: #ff7676 !important;
+    color: #fff
+}
+
+.bg-red:hover {
+    color: #fff
+}
+
+.bg-blue {
+    background: #85b4f2 !important;
+    color: #fff
+}
+
+.bg-blue:hover {
+    color: #fff
+}
+
+.bg-yellow {
+    background: #eef157 !important;
+    color: #fff
+}
+
+.bg-yellow:hover {
+    color: #fff
+}
+
+.bg-green {
+    background: #54e69d !important;
+    color: #fff
+}
+
+.bg-green:hover {
+    color: #fff
+}
+
+.bg-orange {
+    background: #ffc36d !important;
+    color: #fff
+}
+
+.bg-orange:hover {
+    color: #fff
+}
+
+.bg-violet {
+    background: #796AEE !important;
+    color: #fff
+}
+
+.bg-violet:hover {
+    color: #fff
+}
+
+.bg-gray {
+    background: #ced4da !important
+}
+* {
+    box-sizing: border-box;
+  }
+  
+  /* Style the search field */
+  form.example input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+  }
+  
+  /* Style the submit button */
+  form.example button {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    /* padding-bottom: 35px; */
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none; /* Prevent double borders */
+    cursor: pointer;
+  }
+  
+  form.example button:hover {
+    background: #0b7dda;
+  }
+  
+  /* Clear floats */
+  form.example::after {
+    content: "";
+    clear: both;
+    display: table;
+  }

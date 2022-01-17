@@ -1,0 +1,9 @@
+
+.footerBox{
+    /* height: fit-content; */
+    
+    background-color: #cce4fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
