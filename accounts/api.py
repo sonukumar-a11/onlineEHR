@@ -39,14 +39,10 @@ class LoginAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-<<<<<<< HEAD
-        username = serializer.validated_data['username']
-        user = User.objects.get(username=username)
-=======
         email = serializer.validated_data['email']
+
         user = User.objects.get(email=email)
 
->>>>>>> 23c0469c7a84fc4bb32d612dbeb9e00d813eb7c8
         refresh = RefreshToken.for_user(user)
         myserializeddata = GetUserSerializer(user)
 
