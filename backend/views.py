@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 from .models import PatientDetails, VitalDetails, Allergy, Medication, Dosage, ProblemDetails, SocialHistory
 import uuid
 from .serializers import PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, \
@@ -177,21 +176,19 @@ class PatientAddViewSet(ModelViewSet):
     @action(methods=['post'], detail=True)
     def addpatient(self, request, *args, **kwargs):
         target_user = uuid.UUID(kwargs['doctorid'])
-
         data = request.data
-        #
-
         serializer = PatientDetailsSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
             user_data = serializer.data
             user = PatientDetails.objects.get(email_id=user_data['email_id'])
-            email_body = 'Hii use the below credential for login' + " " + str(
-                user.id) + " " + 'use only for personal use '
+            print(user)
+            email_body = 'Welcome {} To The Online EHR \n \n Please use the below credential for login \n'.format(user.name) + str(
+                user.id) + " " + 'use only for personal Use'
             data = {
                 'email_body': email_body,
-                'email_subject': 'Login credential'
+                'email_subject': 'Login credential For Online EHR'
             }
             Util.sent_email(data, user_data['email_id'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -217,7 +214,6 @@ class PatientViewSet(APIView):
         try:
             patient = PatientDetails.objects.get(id=patientid)
             serializer = PatientDetailsSerializer(patient, data=request.data)
-            # print(vitaldetails)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
