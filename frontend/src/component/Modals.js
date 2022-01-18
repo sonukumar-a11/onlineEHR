@@ -43,10 +43,10 @@ export default class Medication extends Component {
     this.handlemedicalSubmit = this.handlemedicalSubmit.bind(this);
 
     const token = localStorage.getItem("token");
-    // if(token == null){
-    //   window.alert("Please log in !")
-    //   window.location.href = "/"
-    // }
+    if(token == null){
+      window.alert("Please log in !")
+      window.location.href = "/"
+    }
    
 
 
