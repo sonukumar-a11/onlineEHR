@@ -20,7 +20,7 @@ export default class Medication extends Component {
       severity:"",
       pstatus:"",
       startdate:"",
-      enddate:null,
+      enddate:"2022-01-11",
       additionaldetails:"",
       medic_name:"",
       dose_unit:"",
@@ -192,15 +192,8 @@ export default class Medication extends Component {
      const res1 = await  axios.post(`http://127.0.0.1:8000/api/patients/${pat_id}/meds`,post,{
       headers:header    
     
- }).then(res=>{
-  toast.success("Prescription details successfully added")
-  setTimeout(()=>{
- window.location.reload()
-  },1500)
- }).catch(err => {
-   console.log(err);
-   
  })
+ console.log(res1.data)
  this.setState({
    med_id:res1.data.id
  })
@@ -224,28 +217,28 @@ window.location.reload()
         <Navbar />
         <div style={{height:"100vh", backgroundImage:`url(${background})`,backgroundRepeat:"no-repeat", backgroundSize:"cover"}}>
           <div className="d-flex justify-content-evenly align-items-center" style={{height:"30vh"}}>
-          <Link to="/viewdetails" className='new btn-lg btn-dark rounded pr-5 pl-5 pt-2 pb-2 text-white font-weight-bold'>{this.state.pat_name.toUpperCase()}<i class="fas fa-arrow-right pl-2" ></i></Link>
+          <Link to="/viewdetails" className='new btn-lg btn-dark rounded pr-5 pl-5 pt-2 pb-2 text-white font-weight-bold'>{this.state.pat_name.toUpperCase()}<i className="fas fa-arrow-right pl-2" ></i></Link>
           </div>
          <div className="d-flex justify-content-evenly align-items-center nn" style={{height:"50vh"}}>
         
            <div className='modal1'>
-            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter">
+            <button type="button" className="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter">
               Add Allergy Details
             </button>
             
          
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Allergy Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div className="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalCenterTitle">Allergy Details</h5>
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <form className="row g-3 needs-validation mx-4 my-4" onSubmit={this.handleallergySubmit}   >
                   
-                  <div class="modal-body">
+                  <div className="modal-body">
   <div className="row g-3">
       <div className="col-md-6">
         <label htmlFor="validationCustom01" className="form-label">
@@ -332,9 +325,9 @@ window.location.reload()
       </div>
      
                   </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit"  class="btn btn-success">Save changes</button>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit"  className="btn btn-success">Save changes</button>
                   </div>
                   </form>
                 </div>
@@ -342,23 +335,23 @@ window.location.reload()
             </div>
            </div>
            <div className='modal2'>
-            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter2">
+            <button type="button" className="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter2">
               Add Problem Details
             </button>
             
   
-            <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle2" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle2">Problems Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div className="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle2" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalCenterTitle2">Problems Details</h5>
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <form className="row g-3 needs-validation mx-4 my-4" onSubmit={this.handleproblemSubmit}   >
                   
-                  <div class="modal-body">
+                  <div className="modal-body">
   <div className="row g-3">
   <div className="col-md-6">
         <label htmlFor="validationCustom01" className="form-label">
@@ -423,7 +416,7 @@ window.location.reload()
         />
         <div className="valid-feedback">Looks good!</div>
       </div>
-      <div className="col-md-6">
+      {/* <div className="col-md-6">
         <label htmlFor="validationCustom01" className="form-label">
           End Date
         </label>
@@ -436,13 +429,13 @@ window.location.reload()
         onChange={this.handleChange}
         />
         <div className="valid-feedback">Looks good!</div>
-      </div>
+      </div> */}
       </div>
      
                   </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save changes</button>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" className="btn btn-success">Save changes</button>
                   </div>
                   </form>
                 </div>
@@ -451,22 +444,22 @@ window.location.reload()
             </div>
             <div className='modal3'>
             <div>
-            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter3">
+            <button type="button" className="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalCenter3">
               Add Prescription
             </button>
             
-            <div class="modal fade" id="exampleModalCenter3" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle3" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Prescription Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div className="modal fade" id="exampleModalCenter3" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle3" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalCenterTitle3">Prescription Details</h5>
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <form className="row g-3 needs-validation mx-4 my-4" onSubmit={this.handlemedicalSubmit}   >
                   
-                  <div class="modal-body">
+                  <div className="modal-body">
 
                                     <div className="row g-3">
                                         <div className="col-md-6">
@@ -552,9 +545,9 @@ window.location.reload()
                                     </div>
 
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-success">Save changes</button>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" className="btn btn-success">Save changes</button>
                                 </div>
                                 </form>
                             </div>
