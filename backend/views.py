@@ -50,8 +50,6 @@ def getToken(request, doctorid=None, patientid=None):
         raise exceptions.AuthenticationFailed("No such user")
 
 
-
-
 class GetAllPatients(APIView):
     def get(self, request, doctorid):
         try:
@@ -417,7 +415,6 @@ class IndProblemViewSet(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         patientid = uuid.UUID(patientid)
-        patient = None
         try:
             problem = ProblemDetails.objects.get(id=id)
             data = request.data
@@ -611,7 +608,6 @@ class PatientProblemDetailsViewSet(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, patientid):
-        serializer_class = ProblemDetailsSerializer
         patientid = uuid.UUID(patientid)
         patient = None
         try:
