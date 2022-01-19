@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from accounts.models import Profile
 from rest_framework.authentication import get_authorization_header
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+from accounts.models import User
 from .models import PatientDetails, VitalDetails, Allergy, Medication, Dosage, ProblemDetails, SocialHistory
 import uuid
 from .serializers import PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, \
@@ -50,7 +50,6 @@ def getToken(request, doctorid=None, patientid=None):
         raise exceptions.AuthenticationFailed("No such user")
 
 
-from accounts.models import User
 
 
 class GetAllPatients(APIView):
@@ -402,7 +401,6 @@ class ProblemViewSet(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         patientid = uuid.UUID(patientid)
-        patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
             data = request.data
@@ -620,6 +618,7 @@ class PatientProblemDetailsViewSet(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, patientid):
+        serializer_class = ProblemDetailsSerializer
         patientid = uuid.UUID(patientid)
         patient = None
         try:
