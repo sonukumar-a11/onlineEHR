@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from accounts.models import Profile
 from rest_framework.authentication import get_authorization_header
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+from accounts.models import User
 from .models import PatientDetails, VitalDetails, Allergy, Medication, Dosage, ProblemDetails, SocialHistory
 import uuid
 from .serializers import PatientDetailsSerializer, VitalDetailsSerializer, AllergySerializer, MedicationSerializer, \
@@ -48,9 +48,6 @@ def getToken(request, doctorid=None, patientid=None):
 
     except Profile.DoesNotExist:
         raise exceptions.AuthenticationFailed("No such user")
-
-
-from accounts.models import User
 
 
 class GetAllPatients(APIView):
