@@ -13,8 +13,10 @@ from .serializers import (
     UserValidationSer
 )
 from .models import Profile, User
-from django.contrib.auth import get_user_model
-User = get_user_model()
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
+
+
 class GetUserAPI(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = GetUserSerializer
@@ -39,14 +41,12 @@ class LoginAPI(generics.GenericAPIView):
 
         refresh = RefreshToken.for_user(user)
         myserializeddata = GetUserSerializer(user)
-
         decodeJWT = jwt.decode(str(refresh.access_token),settings.SECRET_KEY, algorithms=["HS256"])
         decodeJWT['user'] = myserializeddata.data['profile']['id']
         encode = jwt.encode(decodeJWT, settings.SECRET_KEY, algorithm="HS256")
         data = myserializeddata.data
-
         data['token'] = {
-            'refresh': str(refresh), 
+            'refresh': str(refresh),
             'access': str(encode)
         }
 
@@ -74,7 +74,6 @@ class RegisterAPI(generics.CreateAPIView):
         prfile_serialize.save()
 
         refresh = RefreshToken.for_user(user)
-
         decodeJWT = jwt.decode(str(refresh.access_token),settings.SECRET_KEY, algorithms=["HS256"])
         decodeJWT['user'] = prfile_serialize.data['id']
         encode = jwt.encode(decodeJWT, settings.SECRET_KEY, algorithm="HS256")
@@ -83,7 +82,7 @@ class RegisterAPI(generics.CreateAPIView):
         data = myserializeddata.data
 
         data['token'] = {
-            'refresh': str(refresh), 
+            'refresh': str(refresh),
             'access': str(encode)
         }
 
