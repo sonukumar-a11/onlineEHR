@@ -41,7 +41,7 @@ class LoginAPI(generics.GenericAPIView):
 
         refresh = RefreshToken.for_user(user)
         myserializeddata = GetUserSerializer(user)
-        decodeJWT = jwt.decode(str(refresh.access_token),settings.SECRET_KEY, algorithms=["HS256"])
+        decodeJWT = jwt.decode(str(refresh.access_token), settings.SECRET_KEY, algorithms=["HS256"])
         decodeJWT['user'] = myserializeddata.data['profile']['id']
         encode = jwt.encode(decodeJWT, settings.SECRET_KEY, algorithm="HS256")
         data = myserializeddata.data
@@ -74,7 +74,7 @@ class RegisterAPI(generics.CreateAPIView):
         prfile_serialize.save()
 
         refresh = RefreshToken.for_user(user)
-        decodeJWT = jwt.decode(str(refresh.access_token),settings.SECRET_KEY, algorithms=["HS256"])
+        decodeJWT = jwt.decode(str(refresh.access_token), settings.SECRET_KEY, algorithms=["HS256"])
         decodeJWT['user'] = prfile_serialize.data['id']
         encode = jwt.encode(decodeJWT, settings.SECRET_KEY, algorithm="HS256")
 
