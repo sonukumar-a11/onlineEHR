@@ -118,13 +118,6 @@ class AllergyDetailsViewSet(APIView):
 
     def post(self, request, patientid):
         patientid = uuid.UUID(patientid)
-        patient = None
-        try:
-            patient = PatientDetails.objects.get(id=patientid)
-        except Exception:
-            content = {'Patient does not exist'}
-            return Response(content, status=status.HTTP_404_NOT_FOUND)
-
         token = getToken(request, None, patientid)
         if token is None:
             content = {'Invalid token'}
@@ -404,7 +397,7 @@ class ProblemViewSet(APIView):
         patientid = uuid.UUID(patientid)
         patient = None
         try:
-            patient = PatientDetails.objects.get(id=patientid)
+            # patient = PatientDetails.objects.get(id=patientid)
             data = request.data
             data['patient'] = patientid
             serializer = ProblemDetailsSerializer(data=data)
