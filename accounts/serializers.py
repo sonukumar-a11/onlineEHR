@@ -24,10 +24,10 @@ class GetUserSerializer(serializers.ModelSerializer):
         profile = obj.profile
         return ProfileSerializer(profile).data
 
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField()
-
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -48,7 +48,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'password', 'email', 'first_name', 'last_name', 'gender', 'speciality']
         write_only_fields = ['password']
-
 
     def validate(self, data):
         users_qs = User.objects.filter(email=data['email'])
