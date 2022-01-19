@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 from .models import Profile
@@ -7,14 +6,13 @@ from .models import Profile
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-# ProfileSerializer
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['user', 'speciality', 'id', 'gender']
 
 
-# userInfoSerializer
 class GetUserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
 
@@ -23,30 +21,22 @@ class GetUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile']
 
     def get_profile(self, obj):
-        try:
-            profile = obj.profile
-            return ProfileSerializer(profile).data
-        except:
-            return None
+        profile = obj.profile
+        return ProfileSerializer(profile).data
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField()
 
+
     def validate(self, attrs):
         email = attrs.get('email', '')
         password = attrs.get('password', '')
-        filtered_user_by_email = User.objects.filter(email=email)
         user = authenticate(email=email, password=password)
         if not user:
             raise serializers.ValidationError("username or password Incorrect")
 
         return attrs
-
-
-
-
-    # Register Serializer
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -59,8 +49,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'password', 'email', 'first_name', 'last_name', 'gender', 'speciality']
         write_only_fields = ['password']
 
+
     def validate(self, data):
-        print(data)
         users_qs = User.objects.filter(email=data['email'])
         if users_qs.exists():
             raise serializers.ValidationError('user with this email already exists')

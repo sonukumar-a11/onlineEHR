@@ -1,11 +1,7 @@
-import imp
-from django.contrib.auth.models import User
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.authentication import get_authorization_header
 from rest_framework import status
 from django.conf import settings
 import jwt
@@ -16,12 +12,9 @@ from .serializers import (
     ProfileSerializer,
     UserValidationSer
 )
-
 from .models import Profile, User
 from django.contrib.auth import get_user_model
 User = get_user_model()
-
-
 class GetUserAPI(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = GetUserSerializer
@@ -50,11 +43,10 @@ class LoginAPI(generics.GenericAPIView):
         decodeJWT = jwt.decode(str(refresh.access_token),settings.SECRET_KEY, algorithms=["HS256"])
         decodeJWT['user'] = myserializeddata.data['profile']['id']
         encode = jwt.encode(decodeJWT, settings.SECRET_KEY, algorithm="HS256")
-
         data = myserializeddata.data
 
         data['token'] = {
-            'refresh': str(refresh),
+            'refresh': str(refresh), 
             'access': str(encode)
         }
 
@@ -91,7 +83,7 @@ class RegisterAPI(generics.CreateAPIView):
         data = myserializeddata.data
 
         data['token'] = {
-            'refresh': str(refresh),
+            'refresh': str(refresh), 
             'access': str(encode)
         }
 
