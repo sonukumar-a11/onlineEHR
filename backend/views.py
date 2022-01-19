@@ -1,7 +1,6 @@
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
-from rest_framework import generics, permissions
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from accounts.models import Profile
@@ -15,7 +14,6 @@ from .serializers import PatientDetailsSerializer, VitalDetailsSerializer, Aller
     DoctorDashboardSerializer, DoctorDetailsSerializer
 from rest_framework import status, exceptions
 from rest_framework.permissions import AllowAny
-from backend import serializers
 from .utils import Util
 from django.conf import settings
 import jwt
@@ -43,12 +41,12 @@ def getToken(request, doctorid=None, patientid=None):
             if userid == doctor:
                 return token
             return None
-    except jwt.ExpiredSignatureError as ex:
+    except jwt.ExpiredSignatureError:
         raise exceptions.AuthenticationFailed("Token is expired,login again")
-    except jwt.DecodeError as ex:
+    except jwt.DecodeError:
         raise exceptions.AuthenticationFailed("Token is invalid")
 
-    except Profile.DoesNotExist as no_users:
+    except Profile.DoesNotExist:
         raise exceptions.AuthenticationFailed("No such user")
 
 
@@ -66,7 +64,7 @@ class GetAllPatients(APIView):
                 content = {'Invalid token'}
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
             return Response(PatientDetailsSerializer(patients, many=True).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Patient not found'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -79,7 +77,7 @@ class IndAllergyViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -101,7 +99,6 @@ class IndAllergyViewSet(APIView):
 
 
 class AllergyDetailsViewSet(APIView):
-
     def get(self, request, patientid):
         serializer_class = AllergySerializer
         patientid = uuid.UUID(patientid)
@@ -109,7 +106,7 @@ class AllergyDetailsViewSet(APIView):
 
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -121,7 +118,7 @@ class AllergyDetailsViewSet(APIView):
 
             allergydetails = Allergy.objects.filter(patient=patient)
             return Response(AllergySerializer(allergydetails, many=True).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Allergy details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -131,7 +128,7 @@ class AllergyDetailsViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -158,7 +155,7 @@ class VitalDetailsViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -170,7 +167,7 @@ class VitalDetailsViewSet(APIView):
         try:
             vitaldetails = VitalDetails.objects.get(patient=patient)
             return Response(VitalDetailsSerializer(vitaldetails).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Vital details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -180,7 +177,7 @@ class VitalDetailsViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -199,7 +196,7 @@ class VitalDetailsViewSet(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             data = request.data
             data['patient'] = patientid
             print(data)
@@ -224,7 +221,7 @@ class SearchPatient(APIView):
             patient = PatientDetails.objects.filter(doctor=doctor).filter(name__icontains=search_term)
             serializer = DoctorDashboardSerializer(patient, many=True)
             return Response(serializer.data)
-        except:
+        except Exception:
             return Response({'Doctor not found for this id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -250,7 +247,7 @@ class meViewSet(APIView):
             data['doctor_email'] = user.email
 
             return Response(data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {"Doctor Not Found"}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -298,7 +295,7 @@ class PatientViewSet(APIView):
         try:
             patient = PatientDetails.objects.get(id=patientid)
             return Response(PatientDetailsSerializer(patient).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -320,7 +317,7 @@ class PatientViewSet(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -341,7 +338,7 @@ class MedicationViewSet(APIView):
             meds = Medication.objects.filter(patient=patient)
             serializer = MedicationSerializer(meds, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -373,7 +370,7 @@ class DosageViewSet(ModelViewSet):
             dosy = Dosage.objects.get(medication=medication)
             serializer = DosageSerializer(dosy)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -400,14 +397,14 @@ class ProblemViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             problemdetails = ProblemDetails.objects.filter(patient=patient)
             return Response(ProblemDetailsSerializer(problemdetails, many=True).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Problem details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -429,7 +426,7 @@ class ProblemViewSet(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -454,7 +451,7 @@ class IndProblemViewSet(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -472,14 +469,14 @@ class SocialViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             socialdetails = SocialHistory.objects.get(patient=patient)
             return Response(SocialHistorySerializer(socialdetails).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'social details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -495,7 +492,7 @@ class SocialViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -509,7 +506,7 @@ class SocialViewSet(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             data = request.data
             data['patient'] = patientid
             print(data)
@@ -554,14 +551,14 @@ class PatientVitalDetailsViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             vitaldetails = VitalDetails.objects.get(patient=patient)
             return Response(VitalDetailsSerializer(vitaldetails).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Vital details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -577,7 +574,7 @@ class PatientMedicationDetailsViewSet(APIView):
             meds = Medication.objects.filter(patient=patient)
             serializer = MedicationSerializer(meds, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -591,14 +588,14 @@ class PatientSocialViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             socialdetails = SocialHistory.objects.get(patient=patient)
             return Response(SocialHistorySerializer(socialdetails).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'social details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -613,14 +610,14 @@ class PatientAllergyDetailsViewSet(APIView):
 
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             allergydetails = Allergy.objects.filter(patient=patient)
             return Response(AllergySerializer(allergydetails, many=True).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Allergy details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
@@ -634,7 +631,7 @@ class PatientDoseDetailsViewSet(APIView):
             dose = Dosage.objects.get(medication=medication)
             serializer = DosageSerializer(dose)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {"Not found"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
@@ -648,7 +645,7 @@ class PatientProblemDetailsViewSet(APIView):
         patient = None
         try:
             patient = PatientDetails.objects.get(id=patientid)
-        except:
+        except Exception:
             content = {'Patient does not exist'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
 
