@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import *
+from .models import Profile, ProblemDetails, PatientDetails, VitalDetails, Dosage, Medication, SocialHistory, Allergy
 
 
 class ChoicesSerializerField(serializers.SerializerMethodField):

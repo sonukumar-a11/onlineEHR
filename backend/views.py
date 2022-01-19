@@ -655,6 +655,6 @@ class PatientProblemDetailsViewSet(APIView):
         try:
             problemdetails = ProblemDetails.objects.filter(patient=patient)
             return Response(ProblemDetailsSerializer(problemdetails, many=True).data, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             content = {'Problem details not found'}
             return Response(content, status=status.HTTP_404_NOT_FOUND)
