@@ -30,9 +30,9 @@ class VitalDetails(models.Model):
     patient = models.OneToOneField(PatientDetails, on_delete=models.CASCADE)
     weight = models.IntegerField()
     height = models.IntegerField()
-    blood_pressure = models.IntegerField(null=True,blank=True)
-    pulse = models.IntegerField(null=True,blank=True)
-    temperature = models.DecimalField(max_digits=5, decimal_places=2,null=True, blank=True)
+    blood_pressure = models.IntegerField(null=True, blank=True)
+    pulse = models.IntegerField(null=True, blank=True)
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.patient.name
@@ -105,6 +105,7 @@ class ProblemDetails(models.Model):
 
     def __str__(self):
         return self.problem_name
+
 
 class SocialHistory(models.Model):
     SMOKE_STATUS = [
