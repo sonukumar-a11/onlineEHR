@@ -395,9 +395,7 @@ class ProblemViewSet(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         patientid = uuid.UUID(patientid)
-        patient = None
         try:
-            # patient = PatientDetails.objects.get(id=patientid)
             data = request.data
             data['patient'] = patientid
             serializer = ProblemDetailsSerializer(data=data)
@@ -419,7 +417,6 @@ class IndProblemViewSet(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
         patientid = uuid.UUID(patientid)
-        patient = None
         try:
             problem = ProblemDetails.objects.get(id=id)
             data = request.data
